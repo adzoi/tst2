@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eczane Админ - Добавить Товары</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .login-container {
+      max-width: 400px;
+      margin: 10vh auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .admin-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .admin-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    .admin-header h1 {
+      color: #32CD32;
+      margin-bottom: 0.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #333;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #32CD32;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .btn {
+      background: #32CD32;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #28a745;
+    }
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .image-preview {
+      max-width: 200px;
+      max-height: 200px;
+      margin: 1rem 0;
+      border-radius: 8px;
+      display: none;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: #32CD32;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .hidden {
+      display: none;
+    }
+    .github-config {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #32CD32;
+    }
+    .github-config h4 {
+      margin: 0 0 0.5rem 0;
+      color: #333;
+    }
+    .github-config p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #32CD32;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Form -->
+  <div id="login-container" class="login-container">
+    <h1>🔐 Доступ Администратора</h1>
+    <p>Введите пароль администратора для доступа к панели управления товарами.</p>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="admin-password">Пароль Администратора:</label>
+        <input type="password" id="admin-password" placeholder="Введите пароль администратора" required>
+      </div>
+      <button type="submit" class="btn">Войти в Панель Администратора</button>
+    </form>
+    <div id="login-error" class="error-message hidden">Неверный пароль. Попробуйте снова.</div>
+  </div>
+
+  <!-- Admin Panel (Hidden by default) -->
+  <div id="admin-panel" class="admin-container hidden">
+    <a href="/" class="back-link">← Вернуться в Магазин</a>
+    
+    <div class="admin-header">
+      <h1>⚙️ Панель Администратора Eczane</h1>
+      <p>Добавьте новые товары в вашу аптеку (Глобальные Обновления)</p>
+    </div>
+
+    <div class="github-config">
+      <h4>🌐 Глобальные Обновления Товаров через GitHub</h4>
+      <p>Товары, которые вы добавите здесь, будут автоматически обновлены в products.json через GitHub API и видны ВСЕМ пользователям через GitHub Pages!</p>
+    </div>
+
+    <div class="github-config" style="background: #fff3cd; border-left-color: #ffc107;">
+      <h4>🔐 Управление GitHub Токеном</h4>
+      <p>Токен GitHub сохранен в вашем браузере. <button onclick="clearToken()" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Очистить токен</button></p>
+    </div>
+
+    <div id="success-message" class="success-message">
+      ✅ Товар успешно добавлен! Он появится на главной странице немедленно для всех пользователей.
+    </div>
+
+    <div id="error-message" class="error-message hidden">
+      ❌ Ошибка при добавлении товара. Попробуйте снова.
+    </div>
+
+    <form id="product-form">
+      <div class="form-group">
+        <label for="product-image">Изображение Товара:</label>
+        <input type="file" id="product-image" accept="image/*" required>
+        <img id="image-preview" class="image-preview" alt="Предварительный просмотр изображения">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="product-name">Название Товара (Английский):</label>
+          <input type="text" id="product-name" placeholder="например, Aspirin Plus" required>
+        </div>
+        <div class="form-group">
+          <label for="product-name-ru">Название Товара (Русский):</label>
+          <input type="text" id="product-name-ru" placeholder="например, Аспирин Плюс" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="product-category">Категория:</label>
+        <select id="product-category" required>
+          <option value="">Выберите Категорию</option>
+          <option value="Pain Relief">Обезболивающие</option>
+          <option value="Cold & Flu">Простуда и Грипп</option>
+          <option value="Digestive Health">Пищеварение</option>
+          <option value="Vitamins & Supplements">Витамины и Добавки</option>
+          <option value="Skin Care">Уход за Кожей</option>
+          <option value="Heart Health">Сердечное Здоровье</option>
+          <option value="Mental Health">Психическое Здоровье</option>
+          <option value="Women's Health">Женское Здоровье</option>
+          <option value="Men's Health">Мужское Здоровье</option>
+          <option value="Children's Health">Детское Здоровье</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="product-price">Цена (₽):</label>
+          <input type="number" id="product-price" placeholder="509" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="product-stock">Количество на Складе:</label>
+          <input type="number" id="product-stock" placeholder="50" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="product-ingredient">Активное Вещество:</label>
+        <input type="text" id="product-ingredient" placeholder="например, Ацетилсалициловая Кислота" required>
+      </div>
+
+      <div class="form-group">
+        <label for="product-description">Описание (Английский):</label>
+        <textarea id="product-description" rows="3" placeholder="Подробное описание продукта..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="product-description-ru">Описание (Русский):</label>
+        <textarea id="product-description-ru" rows="3" placeholder="Подробное описание продукта..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn" id="submit-btn">
+        <span id="btn-text">Добавить Товар Глобально</span>
+        <span id="btn-loading" class="loading hidden"></span>
+      </button>
+    </form>
+  </div>
+
+  <script src="github-api.js"></script>
+  <script>
+    // GitHub API Configuration - Secure
+    const GITHUB_OWNER = 'gstore'; // Your GitHub username
+    const GITHUB_REPO = 'eczanetst-main'; // Your repository name
+    
+    // Check if repository exists, if not, show instructions
+    async function checkRepositoryExists() {
+      try {
+        let GITHUB_TOKEN = localStorage.getItem('github_token');
+        if (!GITHUB_TOKEN) {
+          GITHUB_TOKEN = prompt('Enter your GitHub Personal Access Token:');
+          if (GITHUB_TOKEN) {
+            localStorage.setItem('github_token', GITHUB_TOKEN);
+          } else {
+            return false;
+          }
+        }
+        
+        const testAPI = new GitHubAPI(GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO);
+        await testAPI.getRepoInfo();
+        return true;
+      } catch (error) {
+        console.log('Repository check failed:', error);
+        return false;
+      }
+    }
+    
+    // GitHub API will be initialized when needed
+    let githubAPI = null;
+    
+    // Simple authentication system
+    const ADMIN_PASSWORD = 'eczane2024'; // Change this to your desired password
+    
+    // Check if already logged in
+    if (localStorage.getItem('admin-authenticated') === 'true') {
+      showAdminPanel();
+    }
+
+    // Login form handler
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const password = document.getElementById('admin-password').value;
+      
+      if (password === ADMIN_PASSWORD) {
+        localStorage.setItem('admin-authenticated', 'true');
+        showAdminPanel();
+      } else {
+        document.getElementById('login-error').classList.remove('hidden');
+        document.getElementById('admin-password').value = '';
+      }
+    });
+
+    function showAdminPanel() {
+      document.getElementById('login-container').classList.add('hidden');
+      document.getElementById('admin-panel').classList.remove('hidden');
+    }
+
+    // Product form handler
+    document.getElementById('product-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const imageFile = document.getElementById('product-image').files[0];
+      if (!imageFile) {
+        showError('Пожалуйста, выберите изображение');
+        return;
+      }
+
+      // Show loading state
+      setLoading(true);
+
+      try {
+        // Convert image to base64
+        const imageBase64 = await convertToBase64(imageFile);
+        
+        // Create new product
+        const newProduct = {
+          id: Date.now(),
+          name: document.getElementById('product-name').value,
+          name_ru: document.getElementById('product-name-ru').value,
+          category: document.getElementById('product-category').value,
+          category_ru: document.getElementById('product-category').value,
+          price: parseFloat(document.getElementById('product-price').value),
+          stock: parseInt(document.getElementById('product-stock').value),
+          image: imageBase64,
+          description: document.getElementById('product-description').value,
+          description_ru: document.getElementById('product-description-ru').value,
+          active_ingredient: document.getElementById('product-ingredient').value,
+          active_ingredient_ru: document.getElementById('product-ingredient').value,
+          dosage_form: 'Tablets',
+          dosage_form_ru: 'Таблетки'
+        };
+
+        // Add to products.json (this will work globally)
+        await addProductToGlobal(newProduct);
+        
+        // Show success message
+        showSuccess();
+        
+        // Reset form
+        document.getElementById('product-form').reset();
+        document.getElementById('image-preview').style.display = 'none';
+        
+      } catch (error) {
+        console.error('Error adding product:', error);
+        showError('Не удалось добавить товар. Попробуйте снова.');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Convert file to base64
+    function convertToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Add product to global products.json via GitHub API
+    async function addProductToGlobal(newProduct) {
+      try {
+        // Check if repository exists first
+        const repoExists = await checkRepositoryExists();
+        if (!repoExists) {
+          // If repository doesn't exist, add to local products.json for now
+          await addProductLocally(newProduct);
+          return;
+        }
+        
+        // Initialize GitHub API with token if not already done
+        if (!githubAPI) {
+          let GITHUB_TOKEN = localStorage.getItem('github_token');
+          if (!GITHUB_TOKEN) {
+            GITHUB_TOKEN = prompt('Enter your GitHub Personal Access Token:');
+            if (GITHUB_TOKEN) {
+              localStorage.setItem('github_token', GITHUB_TOKEN);
+            } else {
+              throw new Error('GitHub token is required to add products.');
+            }
+          }
+          githubAPI = new GitHubAPI(GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO);
+        }
+        
+        // Use GitHub API to add product
+        const result = await githubAPI.addProduct(newProduct);
+        console.log('Product added to GitHub:', result);
+        
+        // Show success message with GitHub commit info
+        const successMsg = document.getElementById('success-message');
+        successMsg.innerHTML = `
+          ✅ Товар успешно добавлен в GitHub!<br>
+          <small>Commit: ${result.commit.sha.substring(0, 7)}</small><br>
+          <small>Он появится на главной странице через несколько секунд.</small>
+        `;
+        
+      } catch (error) {
+        console.error('GitHub API Error:', error);
+        console.error('Error details:', {
+          message: error.message,
+          status: error.status,
+          response: error.response
+        });
+        throw new Error(`GitHub API Error: ${error.message}. Check console for details.`);
+      }
+    }
+    
+    // Add product locally when GitHub repository doesn't exist
+    async function addProductLocally(newProduct) {
+      try {
+        // Load current products
+        const response = await fetch('products.json');
+        const currentProducts = await response.json();
+        
+        // Add new product
+        currentProducts.push(newProduct);
+        
+        // Store in localStorage as backup
+        localStorage.setItem('local_products', JSON.stringify(currentProducts));
+        
+        // Show success message
+        const successMsg = document.getElementById('success-message');
+        successMsg.innerHTML = `
+          ✅ Товар добавлен локально!<br>
+          <small>GitHub репозиторий не найден. Создайте репозиторий ${GITHUB_OWNER}/${GITHUB_REPO} для глобальных обновлений.</small><br>
+          <small>Товар сохранен в localStorage как резервная копия.</small>
+        `;
+        
+        console.log('Product added locally:', newProduct);
+        
+      } catch (error) {
+        console.error('Error adding product locally:', error);
+        throw new Error('Не удалось добавить товар локально.');
+      }
+    }
+
+    // Show loading state
+    function setLoading(loading) {
+      const submitBtn = document.getElementById('submit-btn');
+      const btnText = document.getElementById('btn-text');
+      const btnLoading = document.getElementById('btn-loading');
+      
+      if (loading) {
+        submitBtn.disabled = true;
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+      } else {
+        submitBtn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnLoading.classList.add('hidden');
+      }
+    }
+
+    // Show success message
+    function showSuccess() {
+      const successMsg = document.getElementById('success-message');
+      successMsg.style.display = 'block';
+      setTimeout(() => {
+        successMsg.style.display = 'none';
+        // Reset success message content
+        successMsg.innerHTML = '✅ Товар успешно добавлен! Он появится на главной странице немедленно для всех пользователей.';
+      }, 8000);
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorMsg = document.getElementById('error-message');
+      errorMsg.textContent = message;
+      errorMsg.classList.remove('hidden');
+      setTimeout(() => {
+        errorMsg.classList.add('hidden');
+      }, 5000);
+    }
+
+    // Image preview
+    document.getElementById('product-image').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('image-preview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+
+    // Test GitHub API connectivity
+    async function testGitHubAPI() {
+      try {
+        let GITHUB_TOKEN = localStorage.getItem('github_token');
+        if (!GITHUB_TOKEN) {
+          GITHUB_TOKEN = prompt('Enter your GitHub Personal Access Token:');
+          if (GITHUB_TOKEN) {
+            localStorage.setItem('github_token', GITHUB_TOKEN);
+          } else {
+            throw new Error('No token provided');
+          }
+        }
+        
+        const testAPI = new GitHubAPI(GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO);
+        const repoInfo = await testAPI.getRepoInfo();
+        console.log('GitHub API Test Success:', repoInfo);
+        alert('GitHub API connection successful! Repository: ' + repoInfo.name);
+        return true;
+      } catch (error) {
+        console.error('GitHub API Test Failed:', error);
+        alert('GitHub API Test Failed: ' + error.message);
+        return false;
+      }
+    }
+    
+    // Add test button to admin panel
+    window.addEventListener('load', function() {
+      const testButton = document.createElement('button');
+      testButton.textContent = 'Test GitHub API';
+      testButton.style.cssText = 'background: #007bff; color: white; border: none; padding: 10px; margin: 10px; border-radius: 5px; cursor: pointer;';
+      testButton.onclick = testGitHubAPI;
+      
+      const adminPanel = document.getElementById('admin-panel');
+      if (adminPanel) {
+        adminPanel.insertBefore(testButton, adminPanel.firstChild);
+      }
+    });
+    // Clear GitHub token
+    function clearToken() {
+      localStorage.removeItem('github_token');
+      alert('GitHub токен очищен. При следующем добавлении товара потребуется ввести токен заново.');
+    }
+  </script>
+</body>
+</html>
