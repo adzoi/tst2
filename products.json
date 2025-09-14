@@ -304,5 +304,23 @@
     "dosage_form": "Tablet",
     "dosage_form_ru": "Таблетка",
     "stock": 25
+  },
+  {
+    "id": 18,
+    "name": "Vitamin C Immune Boost 5",
+    "name_ru": "Витамин C для Иммунитета 4",
+    "price": 28.99,
+    "description": "High-potency vitamin C supplement with 1000mg strength. Supports immune system function, collagen synthesis, and antioxidant protection. Enhanced with bioflavonoids for better absorption.",
+    "description_ru": "Высокопотенциальная добавка витамина C с силой 1000мг. Поддерживает функцию иммунной системы, синтез коллагена и антиоксидантную защиту. Усилена биофлавоноидами для лучшего всасывания.",
+    "category": "Vitamins & Supplements",
+    "category_ru": "Витамины и Добавки",
+    "image": "./images/123.png",
+    "prescription": false,
+    "active_ingredient": "Ascorbic Acid",
+    "active_ingredient_ru": "Аскорбиновая кислота",
+    "strength": "1000mg",
+    "dosage_form": "Tablet",
+    "dosage_form_ru": "Таблетка",
+    "stock": 25
   }
 ]
